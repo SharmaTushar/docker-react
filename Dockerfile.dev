@@ -1,0 +1,19 @@
+FROM node:21-alpine
+
+# RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable
+RUN corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+COPY package.json .
+COPY pnpm-lock.yaml .
+# RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install
+
+COPY . .
+
+CMD ["pnpm", "run", "dev", "--host"]
